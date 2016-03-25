@@ -1,0 +1,296 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="import-socket.io.html">
+
+<!--
+A web component that connects to a Socket.IO server. Incoming messages are
+forwarded into Polymer's event system.
+
+Example:
+
+    <template is="dom-bind" id="app">
+      <socket-io id="socket" auto-connect auto-forwarding
+        on-io-user-message="handleMessage">
+      </socket-io>
+    </template>
+
+    <script>
+      var app = document.querySelector("#app");
+
+      // handling incoming events
+      app.handleMessage = function(e, detail) {
+        // this will be called when a `user message` event is received.
+      };
+
+      // sending events
+      var send = function(message) {
+        app.$.socket.send("user message", message);
+      };
+    </script>
+
+@group Seed Elements
+@element socket-io
+@demo demo/index.html
+-->
+<script>
+
+  Polymer({
+    is: 'socket-io',
+
+    /**
+     * Fired when the client receives a new message.
+     *
+     * Event name will be converted to lowercase, and non-letter characters
+     * will be converted to hyphens. Consecutive non-letter characters will
+     * be replaced by a single hyphen.
+     *
+     * @event io-*
+     */
+
+    /**
+     * Fired when a connection is established.
+     *
+     * @event connection
+     */
+
+    /**
+     * Fired when the connection ends.
+     *
+     * @event disconnection
+     */
+
+    /**
+     * Fired when the client joins a room.
+     *
+     * @event join-room
+     */
+
+    /**
+     * Fired when the client leaves a room.
+     *
+     * @event leave-room
+     */
+
+    properties: {
+      /**
+       * Connect to this server and namespace.
+       *
+       * Leave `undefined` to use socket.io's default. See
+       * [socket.io's client API](http://socket.io/docs/client-api/#io%28url:string,-opts:object%29:socket)
+       * for more information.
+       *
+       */
+      url: {
+        type: String,
+        value: undefined
+      },
+
+      /**
+       * Events listed here will be forwarded into Polymer's event system.
+       *
+       * Implies `autoForwarding=false`.
+       */
+      forwarding: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
+       * List of received event types.
+       *
+       */
+      eventsDetected: {
+        type: Array,
+        value: function() {
+          return [];
+        },
+        readOnly: true,
+        notify: true
+      },
+
+      /**
+       * Automatically connect to the Socket.IO server.
+       *
+       */
+      autoConnecting: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Automatically forward events to Polymer.
+       *
+       */
+      autoForwarding: {
+        type: Boolean,
+        value: false
+      },
+
+      _autoForwarding: {
+        type: Boolean,
+        computed: "_computeAutoForwarding(autoForwarding, forwarding)"
+      },
+
+      connected: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      }
+    },
+
+    observers: [
+      "_subscribeForwarding(forwarding, connected)"
+    ],
+
+    // Lifecycle Events
+
+    attached: function() {
+      console.log('socket-io attached');
+      this._io_listeners = [];
+      if(this.autoConnecting) {
+        this.connect();
+      }
+    },
+
+    /**
+     * Send a message to the Socket.IO server.
+     */
+    send: function(event, message) {
+      this.socket.emit(event, message);
+    },
+
+    /**
+     * Connect to the Socket.IO server.
+     */
+    connect: function() {
+      if(!this.connected) {
+        this.socket = io(this.url);
+
+        // The following line accesses a method that is not, strictly
+        // speaking, part of the Socket.IO API. If this component stops
+        // working, then it's probably worth checking here and seeing if
+        // Socket.IO changed something.
+        //
+        // This event is emitted by the manager when an incoming packet is
+        // done being decoded by engine.io-parser.
+        //
+        // Yes, 'an incoming packet' means 'all the packets' (engine.io
+        // packets, and not, for example, TCP/IP packets).
+        //
+        // Time to drink the firehose!
+        this.socket.io.on('packet', this._onPacket.bind(this));
+        this._setConnected(true);
+        this.fire('connection');
+      }
+    },
+
+    /**
+     * Disconnect from the Socket.IO server.
+     */
+    disconnect: function() {
+      if(this.connected) {
+        this._subscribeForwarding();
+        this.socket.disconnect()
+        this._setConnected(false);
+        this.fire('disconnection');
+      }
+    },
+
+    /**
+     * Subscribe to events listed as forwarding into Polymer.
+     */
+    _subscribeForwarding: function(forwarding, connected) {
+      if(connected) {
+        forwarding.forEach(function(el) {
+          // dasherize here to avoid repeating it later.
+          var dasherizedName = el.replace(/[^\w]+/g, '-').toLowerCase();
+          var callback = this._handleMessage.bind(this, dasherizedName);
+          this.socket.on(el, callback);
+
+          // save listener for later removal
+          this._io_listeners.push([el, callback]);
+        }, this);
+      }
+    },
+
+    /**
+     * Unsubscribe from events listed as forwarding into Polymer.
+     */
+    _unsubscribeForwarding: function() {
+      this._io_listeners.forEach(function(el) {
+        var eventName = el[0];
+        var callback = el[1];
+
+        this.socket.off(eventName, callback);
+      }, this);
+
+      // clear listeners
+      this._io_listeners = [];
+    },
+
+    /**
+     * "`forwarding` implies `autoForwarding=false`"
+     */
+    _computeAutoForwarding: function(autoForwarding, forwarding) {
+      return autoForwarding && forwarding.length < 1;
+    },
+
+    /**
+     * Generic event handler.
+     *
+     * Forwards event into Polymer's event system.
+     */
+    _handleMessage: function(name, data) {
+      // prefix the event to avoid collisions with other events this
+      // component fires, or in the future might need to fire.
+      this.fire('io-' + name, data);
+      console.log(name, data);
+    },
+
+    /**
+     * Drinking the firehose.
+     *
+     * WARNING: Digs into Socket.IO internals.
+     *
+     * TODO: Replace with an `addGlobalListener()` or `on('*', [...])`
+     *       when socket-io adds support for either of those.
+     */
+    _onPacket: function(packet) {
+      // We don't have access to the following constants, but we still
+      // need to filter for them:
+      var /*engine.io-parser*/ EVENT = 2
+      var /*engine.io-parser*/ BINARY_EVENT = 5
+
+      // This is basically what socket.io's `Socket.onPacket()` and
+      // Socket.onevent()` methods do, except we don't care about any of
+      // the other types and we're ignoring message buffers and hoping it
+      // just works.
+      if(packet.type === EVENT || packet.type === BINARY_EVENT) {
+        var eventName = packet.data[0];
+        var eventData = packet.data[1];
+
+        // append new event types to detected array
+        if (!this.eventsDetected.includes(eventName)) {
+          this.push("eventsDetected", eventName);
+        }
+
+        if(this._autoForwarding) {
+          this._handleMessage(eventName, eventData);
+        }
+      }
+    }
+  });
+
+</script>

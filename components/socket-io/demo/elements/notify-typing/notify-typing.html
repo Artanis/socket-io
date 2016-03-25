@@ -1,0 +1,53 @@
+<link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../../../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../../../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../robohash-avatar/robohash-avatar.html">
+
+<dom-module id="notify-typing">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <robohash-avatar name="[[name]]" width="50" height="50" set="[[robohashSet]]"></robohash-avatar>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'notify-typing',
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+        name: {
+          type: String
+        },
+
+        robohashSet: {
+          type: Number,
+          value: undefined
+        },
+
+        animationConfig: {
+          value: function() {
+            return {
+              entry: [
+                {name: 'fade-in-animation',  node: this},
+                {name: 'fade-out-animation', node: this, timing: {delay: 400}}
+              ]
+            };
+          }
+        }
+      },
+
+      attached: function() {
+        this.playAnimation('entry');
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,112 @@
+<link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../../paper-material/paper-material.html">
+<link rel="import" href="../robohash-avatar/robohash-avatar.html">
+
+
+<dom-module id="chat-message">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-material {
+        background-color: var(--chat-message-background-color, --primary-background-color);
+        padding: 0.25em;
+      }
+
+      .avatar {
+        width: 50px;
+      }
+
+      .header {}
+
+      .body {}
+
+      .message {
+        color: var(--chat-message-body-color, --primary-text-color);
+      }
+
+      .username {
+        color: var(--chat-message-username-color, --primary-text-color);
+        overflow: hidden;
+      }
+
+      .timestamp {
+        color: var(--chat-message-secondary-text-color, --secondary-text-color);
+      }
+
+      .vertical-rule {
+        border-left: 1px solid var(--chat-message-divider-color, --divider-color);
+        margin: 0em 0.25em;
+        width: 0px;
+      }
+
+      .horizontal-rule {
+        border-top: 1px solid var(--chat-message-divider-color, --divider-color);
+        margin: 0.25em 0em;
+        height: 0px;
+      }
+    </style>
+
+
+
+    <paper-material elevation="3">
+      <div class="flex layout horizontal">
+        <robohash-avatar class="avatar" name="[[name]]" height="50" width="50" set="[[robohashSet]]"></robohash-avatar>
+
+        <div class="vertical-rule self-stretch"></div>
+
+        <div class="body flex layout vertical">
+          <div class="header layout horizontal">
+            <div class="username">[[name]]</div>
+            <div class="flex"></div>
+            <div class="timestamp self-end-justified">[[_localeTimeString]]</div>
+          </div>
+          <div class="horizontal-rule self-stretch"></div>
+          <div class="message flex">[[message]]</div>
+        </div>
+      </div>
+    </paper-material>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'chat-message',
+
+      properties: {
+        name: {
+          type: String
+        },
+
+        message: {
+          type: String,
+          value: undefined
+        },
+
+        robohashSet: {
+          type: Number,
+          value: undefined
+        },
+
+        timestamp: {
+          type: Date,
+          value: function() {
+            return Date.now()
+          }
+        },
+
+        _localeTimeString: {
+          type: String,
+          computed: "toLocaleTimeString(timestamp)"
+        }
+      },
+
+      toLocaleTimeString: function(timestamp) {
+        return timestamp.toLocaleTimeString();
+      }
+    });
+  </script>
+</dom-module>
