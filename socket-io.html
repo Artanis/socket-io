@@ -256,7 +256,7 @@ Example:
       // prefix the event to avoid collisions with other events this
       // component fires, or in the future might need to fire.
       this.fire('io-' + name, data);
-      console.log(dasherizedName, data);
+      console.log(name, data);
     },
 
     /**
