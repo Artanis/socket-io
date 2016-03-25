@@ -1,0 +1,27 @@
+{
+  "name": "socket-io",
+  "version": "0.1.0",
+  "description": "A web component that connects to a Socket.IO server. Incoming messages are forwarded into Polymer's event system.",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "polyserve -H 0.0.0.0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Artanis/socket-io.git"
+  },
+  "keywords": [
+    "socket.io",
+    "polymer",
+    "webcomponent"
+  ],
+  "author": "Erik Youngren <erik@youngren.us>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Artanis/socket-io/issues"
+  },
+  "homepage": "https://github.com/Artanis/socket-io#readme"
+}

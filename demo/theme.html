@@ -1,0 +1,67 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+
+<style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning"></style>
+
+<style is="custom-style">
+  :root {
+    --dark-primary-color:       #616161;
+    --default-primary-color:    #9E9E9E;
+    --light-primary-color:      #F5F5F5;
+    --text-primary-color:       #212121;
+    --accent-color:             #4CAF50;
+    --primary-background-color: #F5F5F5;
+    --primary-text-color:       #212121;
+    --secondary-text-color:     #727272;
+    --disabled-text-color:      #BDBDBD;
+    --divider-color:            #B6B6B6;
+
+
+    /* Components */
+
+    /* paper-input */
+   --paper-input-container-color:       var(--secondary-text-color);
+   --paper-input-container-focus-color: var(--accent-color);
+   --paper-input-container-input-color: var(--text-primary-color);
+  }
+</style>
+
+
+<style is="custom-style">
+  body {
+    background-color: var(--dark-primary-color);
+    color: var(--text-primary-color);
+  }
+
+  paper-icon-button[icon=send] {
+    color: var(--accent-color);
+  }
+
+  #chatTitle {
+    background-color: var(--primary-background-color);
+  }
+
+  #chatLog {
+    padding:0.5em;
+    overflow-y: scroll;
+  }
+
+  #chatIsTyping {
+    width: 75px;
+    padding: 0.25em;
+  }
+
+  #chatMessage {
+    background-color: var(--primary-background-color);
+    padding: 0.25em;
+  }
+
+  chat-message + chat-message {
+    margin-top: 0.5em;
+  }
+
+  notify-typing + notify-typing {
+    margin-left: 0.25em;
+  }
+</style>
+
+<link rel="import" href="icons.html">

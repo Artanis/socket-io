@@ -1,0 +1,56 @@
+<link rel="import" href="../../../../polymer/polymer.html">
+<link rel="import" href="../../../../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../../../iron-image/iron-image.html">
+
+<dom-module id="robohash-avatar">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <div class="flex layout horizontal">
+      <iron-image class="self-end" src="[[src]]" preload sizing="cover" width="[[width]]" height="[[height]]"></iron-image>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: 'robohash-avatar',
+
+      properties: {
+        name: {
+          type: String
+        },
+
+        set: {
+          type: Number,
+          value: 0
+        },
+
+        width: {
+          type: Number,
+          value: 100
+        },
+
+        height: {
+          type: Number,
+          value: 100
+        },
+
+        src: {
+          type: String,
+          computed: "generateRobohashUrl(name, set)"
+        }
+      },
+
+      generateRobohashUrl: function(name, set) {
+        if(set === 0) {
+          set = (name.length % 3) + 1;
+        }
+
+        return "https://robohash.org/"+name+"?set=set"+set;
+      }
+    });
+  </script>
+</dom-module>
