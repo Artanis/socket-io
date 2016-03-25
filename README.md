@@ -1,4 +1,4 @@
-[Demo and API docs](https://artanis.github.io/socket-io/)
+[Demo and API docs](http://artanis.github.io/socket-io/)
 
 # &lt;socket-io&gt;
 `<socket-io>` connects to a Socket.IO server and forwards received

@@ -4,6 +4,7 @@
   var app = document.querySelector('#app');
 
   app.TYPING_DELAY = 400;
+  app.https = window.location.protocol === 'https';
   app.signedIn = false;
   app.messages = [];
   app.typing = [];

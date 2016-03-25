@@ -26,6 +26,17 @@
         <paper-input id="inputNickname" label="What is your nickname?" value="{{nickname}}"
           required auto-validate error-message="Please choose a nickname">
         </paper-input>
+        <template is="dom-if" if="[[https]]" restamp="true">
+          <p>
+            The Socket.IO chat demo does not support secure connections, and
+            may result in breaking if your browser blocks the unsecured
+            connection to the chat server. To view this demo, you can  either
+            use an unsecured connection (<code>http</code>), or clone the
+            repository (<code>git clone https://github.com/Artanis/socket-io.git</code>)
+            and run <code>polyserve</code> in the repository root, which also
+            does not support secure connections.
+          </p>
+        </template>
         <div class="buttons">
           <paper-icon-button icon="check-circle" on-click="signIn"></paper-icon-button>
         </div>
