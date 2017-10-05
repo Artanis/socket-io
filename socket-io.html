@@ -167,8 +167,8 @@ Example:
     /**
      * Send a message to the Socket.IO server.
      */
-    send: function(event, message) {
-      this.socket.emit(event, message);
+    send: function(event, message, cb) {
+      this.socket.emit(event, message, cb);
     },
 
     /**
