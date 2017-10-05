@@ -1,8 +1,9 @@
 {
   "name": "socket-io",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
-    "Erik Youngren <erik@youngren.us>"
+    "Erik Youngren <erik@youngren.us>",
+    "Chase B. Gale"
   ],
   "description": "A web component that connects to a Socket.IO server. Incoming messages are forwarded into Polymer's event system.",
   "keywords": [
@@ -13,14 +14,14 @@
   ],
   "main": "socket-io.html",
   "license": "MIT",
-  "homepage": "https://github.com/Artanis/socket-io/",
+  "homepage": "https://github.com/chasebgale/socket-io/",
   "ignore": [
     "/.*",
     "/test/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.1.0",
-    "socket.io-client": "~1.4.5"
+    "polymer": "Polymer/polymer#^2.0",
+    "socket.io-client": "^2.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
