@@ -1,6 +1,6 @@
 {
   "name": "socket-io",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "A web component that connects to a Socket.IO server. Incoming messages are forwarded into Polymer's event system.",
   "directories": {
     "test": "test"
